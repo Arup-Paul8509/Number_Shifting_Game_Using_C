@@ -38,16 +38,18 @@
 */
 
 /* Header files */
+/*----------------------------------------------*/
 #include<stdio.h>
 #include<conio.h>
-#include<stdlib.h>
-#include<windows.h>
+#include<stdlib.h> //For rand() function
+#include<windows.h> //To Set Text Colour
 #include<string.h>
 #include<time.h>
-/*-----------------*/
+/*----------------------------------------------*/
 
 /*  Function Prototype  */
 /*-------------------------------------------------------------------------------*/
+void gamePlay(char[],int[4][4]); //To start playing game
 void generateMatrix(int[4][4]); //To generate random matrix with elements 0 to 15
 void displayMatrix(int[4][4]); //To display matrix
 int move(int[4][4]); //To perform moves in matrix
@@ -56,19 +58,14 @@ int compareMatrices(int[4][4],int[4][4]); //To compare two matrix
 void terminate(); //To terminate the game
 /*-------------------------------------------------------------------------------*/
 
-const int count=300; // Total number of moves
-int c=count; // Number of remaining moves
-
 /*     Function Definitions    */
 /*------------------------------------------------------------------------------*/
 //Definition of main() function
 int main()
 {
-    int mat[4][4];
     int rmat[4][4]={{1,2,3,4},{5,6,7,8},{9,10,11,12},{13,14,15,0}};//Winning situation matrix
     char name[20];//Player's Name
-    char ch;
-    int i;
+
     /*First Page*/
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15|BACKGROUND_GREEN);
     printf("\n\n  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-  Welcome to The Number Shifting Game  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* ");
@@ -97,10 +94,26 @@ int main()
     printf("\n\n Press any key to start.....");
     getch();
     system("cls");
+    gamePlay(name,rmat);
+    return 0;
+}
+
+//Definition of gamePlay() function
+void gamePlay(char name[],int rmat[4][4])
+{
+    int c=300;
+    int i;
+    int mat[4][4];
     generateMatrix(mat);
     /*----------------------*/
     /*Game playing area*/
-    int color[]={15,2,3,6,7,9,11,13,14,1};
+    int color[]={15,2,3,6,7,9,11,13,14,1};// Array of color code
+    /*
+    black=0,dark blue=1,dark green=2,dark aqua=3,
+    dark red=4,dark pink=5,dark yellow=6,dark white=7,
+    gray=8,blue=9,green=10,aqua=11,
+    red=12,pink=13,yellow=14,white=15
+    */
     i=0;
     while(c>0 && !compareMatrices(mat,rmat))
     {
@@ -111,7 +124,10 @@ int main()
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),color[i]);
         displayMatrix(mat);
         if(move(mat))
+        {
             i++;
+            c--;
+        }
         system("cls");
     }
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),6);
@@ -120,12 +136,14 @@ int main()
     {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),4);
         displayMatrix(mat);
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15|BACKGROUND_RED);
         printf("\n\n\t Sorry %s,You Loss, Better luck next time !",name);
     }
     else //This block will be executed if player wins
     {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
         displayMatrix(mat);
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15|BACKGROUND_GREEN);
         printf("\n\n\t Congratulations %s, You Win",name);
     }
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15);
@@ -140,8 +158,7 @@ int main()
             case 's':
                 system("cls");
                 system("COLOR 7"); //Font color shifted to white
-                c=count; //Reinitialize the total number of moves
-                main(); // Calling main() function to restart the game again
+                gamePlay(name,rmat); // Calling gamePlay() function to restart the game again
                 break;
             case 'e': //If player wants to exit the game
             case 'E':
@@ -150,9 +167,7 @@ int main()
         }
     }
     /*------------------------------------*/
-    return 0;
 }
-
 //Definition of generateMatrix() function
 void generateMatrix(int m[4][4])
 {
@@ -237,7 +252,6 @@ int move(int m[4][4])
                 if(i!=3)
                 {
                     swap(&m[i][j],&m[i+1][j]);
-                    c--;
                     flag=1;
                 }
                 break;
@@ -245,7 +259,6 @@ int move(int m[4][4])
                 if(i!=0)
                 {
                     swap(&m[i][j],&m[i-1][j]);
-                    c--;
                     flag=1;
                 }
                 break;
@@ -253,7 +266,6 @@ int move(int m[4][4])
                 if(j!=3)
                 {
                     swap(&m[i][j],&m[i][j+1]);
-                    c--;
                     flag=1;
                 }
                 break;
@@ -261,14 +273,13 @@ int move(int m[4][4])
                 if(j!=0)
                 {
                     swap(&m[i][j],&m[i][j-1]);
-                    c--;
                     flag=1;
                 }
         }
     }
     else if(ch=='e' || ch=='E')// To terminate game in middle of the game
         terminate();
-    return flag;
+    return flag; //Returns 1 if move occurs else 0
 }
 
 //Definition of swap() function
@@ -279,7 +290,6 @@ void swap(int *a,int *b)
     *a=*b;
     *b=t;
 }
-
 
 //Definition of compareMatrices() function
 int compareMatrices(int m[4][4],int r[4][4])
