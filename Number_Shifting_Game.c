@@ -41,6 +41,7 @@
 #include<stdio.h>
 #include<conio.h>
 #include<stdlib.h>
+#include<windows.h>
 #include<string.h>
 #include<time.h>
 /*-----------------*/
@@ -55,7 +56,8 @@ int compareMatrices(int[4][4],int[4][4]); //To compare two matrix
 void terminate(); //To terminate the game
 /*-------------------------------------------------------------------------------*/
 
-int c=300; // Total number of moves
+const int count=300; // Total number of moves
+int c=count; // Number of remaining moves
 
 /*     Function Definitions    */
 /*------------------------------------------------------------------------------*/
@@ -66,50 +68,68 @@ int main()
     int rmat[4][4]={{1,2,3,4},{5,6,7,8},{9,10,11,12},{13,14,15,0}};//Winning situation matrix
     char name[20];//Player's Name
     char ch;
+    int i;
     /*First Page*/
-    printf("\n\n\n\t\tWelcome to The Number Shifting Game... ");
-    printf("\n\n\tEnter Your Name : ");
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15|BACKGROUND_GREEN);
+    printf("\n\n  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-  Welcome to The Number Shifting Game  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* ");
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15);
+    printf("\n\n\t\tEnter Your Name : ");
     fgets(name,20,stdin);
     name[strlen(name)-1]='\0';
     system("cls"); //Clear the whole screen
     /*----------------------*/
     /*Rules*/
-    printf("\n\tHello %s, read rules of the game carefully...\n",name);
-    printf("\n\n RULE OF THIS GAME\n");
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),14|BACKGROUND_RED);
+    printf("\n\n ********** RULE OF THIS GAME ********** \n");
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15|BACKGROUND_INTENSITY);
+    printf("\n Hello %s, read rules of the game carefully... \n",name);
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),11);
     printf("\n 1. You can move only 1 step at a time by arrow key \n Move Up : By Up arrow key\n Move Down : By Down arrow key\n Move Left : By Left arrow key\n Move Right : By Right arrow key");
-    printf("\n 2. You can move number at empty position only");
-    printf("\n 3. For each valid move : your total number of move will decreased by 1");
-    printf("\n 4. Winning situation : number in a 4*4 matrix should be in order from 1 to 15\n\n\t Winning situation : \n");
+    printf("\n\n 2. You can move number at empty position only");
+    printf("\n\n 3. For each valid move : your total number of move will decreased by 1");
+    printf("\n\n 4. Winning situation : number in a 4*4 matrix should be in order from 1 to 15\n\n  Winning situation : \n");
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),2);
     displayMatrix(rmat);
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),11);
     printf("\n 5. You can exit the game at any time by pressing \'E\' or \'e\'");
     printf("\n\n\t Happy gaming, Good Luck");
-    printf("\n\nPress any key to start.....");
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15);
+    printf("\n\n Press any key to start.....");
     getch();
     system("cls");
     generateMatrix(mat);
     /*----------------------*/
     /*Game playing area*/
+    int color[]={1,2,3,6,7,9,11,13,14,15};
+    i=0;
     while(c>0 && !compareMatrices(mat,rmat))
     {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),14);
         printf("\n Hey %s, you have %d moves\n",name,c);
+        if(i==10)
+            i=0;
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),color[i++]);
         displayMatrix(mat);
         move(mat);
         system("cls");
     }
-    system("cls");
-    displayMatrix(mat);
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),6);
+    printf("\n !!! GAME OVER !!! \n\n");
     if(c==0)//This block will be executed if player loses
     {
-        system("COLOR 4");//To change font color to RED
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),4);
+        displayMatrix(mat);
         printf("\n\n\t Sorry %s,You Loss, Better luck next time !",name);
     }
     else //This block will be executed if player wins
     {
-        system("COLOR A");//To change font color to Green
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
+        displayMatrix(mat);
         printf("\n\n\t Congratulations %s, You Win",name);
     }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15);
     printf("\n\n Press \'S\' or \'s\' to play again...");
-    printf("\n\n Press \'E\' or \'e\' to exit...");
+    printf("\n Press \'E\' or \'e\' to exit...");
     //When game will be completed , this loop will be executed... if player wants to restart the game or exit the game
     while(1)
     {
@@ -119,7 +139,7 @@ int main()
             case 's':
                 system("cls");
                 system("COLOR 7"); //Font color shifted to white
-                c=300; //Reinitialize the total number of moves
+                c=count; //Reinitialize the total number of moves
                 main(); // Calling main() function to restart the game again
                 break;
             case 'e': //If player wants to exit the game
@@ -166,10 +186,10 @@ void generateMatrix(int m[4][4])
 void displayMatrix(int m[4][4])
 {
     int i,j;
-    printf("-----------------\n");
+    printf("\t-----------------\n");
     for(i=0;i<4;i++)
     {
-        printf("|");
+        printf("\t|");
         for(j=0;j<4;j++)
         {
             if(m[i][j]==0) // For 0 (If element is 0 then print space)
@@ -182,7 +202,7 @@ void displayMatrix(int m[4][4])
         }
         printf("\n");
     }
-    printf("-----------------\n");
+    printf("\t-----------------\n");
 }
 
 //Definition of move() function
@@ -282,6 +302,7 @@ void terminate()
     system("cls");
     system("COLOR 7");
     printf("\n Thank you for playing ...\n\n");
+    getch();
     exit(0);
 }
 
