@@ -50,7 +50,7 @@
 /*-------------------------------------------------------------------------------*/
 void generateMatrix(int[4][4]); //To generate random matrix with elements 0 to 15
 void displayMatrix(int[4][4]); //To display matrix
-void move(int[4][4]); //To perform moves in matrix
+int move(int[4][4]); //To perform moves in matrix
 void swap(int*,int*); //To swap two elements of matrix
 int compareMatrices(int[4][4],int[4][4]); //To compare two matrix
 void terminate(); //To terminate the game
@@ -100,7 +100,7 @@ int main()
     generateMatrix(mat);
     /*----------------------*/
     /*Game playing area*/
-    int color[]={1,2,3,6,7,9,11,13,14,15};
+    int color[]={15,2,3,6,7,9,11,13,14,1};
     i=0;
     while(c>0 && !compareMatrices(mat,rmat))
     {
@@ -108,9 +108,10 @@ int main()
         printf("\n Hey %s, you have %d moves\n",name,c);
         if(i==10)
             i=0;
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),color[i++]);
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),color[i]);
         displayMatrix(mat);
-        move(mat);
+        if(move(mat))
+            i++;
         system("cls");
     }
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),6);
@@ -194,10 +195,8 @@ void displayMatrix(int m[4][4])
         {
             if(m[i][j]==0) // For 0 (If element is 0 then print space)
                 printf("   ");
-            else if(m[i][j]/10==0) // For single digit numbers
-                printf("%d  ",m[i][j]);
-            else // For 2 digit numbers
-                printf("%d ",m[i][j]);
+            else
+                printf("%-2d ",m[i][j]);
             printf("|");
         }
         printf("\n");
@@ -206,8 +205,9 @@ void displayMatrix(int m[4][4])
 }
 
 //Definition of move() function
-void move(int m[4][4])
+int move(int m[4][4])
 {
+    int flag=0;
     int i,j,ch;
     // Finding the position of 0
     for(i=0;i<4;i++)
@@ -238,6 +238,7 @@ void move(int m[4][4])
                 {
                     swap(&m[i][j],&m[i+1][j]);
                     c--;
+                    flag=1;
                 }
                 break;
             case 80: // Down arrow
@@ -245,6 +246,7 @@ void move(int m[4][4])
                 {
                     swap(&m[i][j],&m[i-1][j]);
                     c--;
+                    flag=1;
                 }
                 break;
             case 75: //Left arrow
@@ -252,6 +254,7 @@ void move(int m[4][4])
                 {
                     swap(&m[i][j],&m[i][j+1]);
                     c--;
+                    flag=1;
                 }
                 break;
             case 77: //Right arrow
@@ -259,11 +262,13 @@ void move(int m[4][4])
                 {
                     swap(&m[i][j],&m[i][j-1]);
                     c--;
+                    flag=1;
                 }
         }
     }
     else if(ch=='e' || ch=='E')// To terminate game in middle of the game
         terminate();
+    return flag;
 }
 
 //Definition of swap() function
